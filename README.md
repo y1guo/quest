@@ -1,2 +1,2 @@
-# quest-system
+# quest
 Manage tasks like game quests
