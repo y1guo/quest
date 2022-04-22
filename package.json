@@ -1,0 +1,28 @@
+{
+    "name": "quest",
+    "version": "1.0.0",
+    "description": "Manage tasks like game quests",
+    "main": "index.js",
+    "scripts": {
+        "start": "webpack serve --open",
+        "build": "rm dist/* && webpack",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/y1guo/quest.git"
+    },
+    "keywords": [],
+    "author": "Yi Guo",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/y1guo/quest/issues"
+    },
+    "homepage": "https://github.com/y1guo/quest#readme",
+    "devDependencies": {
+        "html-webpack-plugin": "^5.5.0",
+        "webpack": "^5.72.0",
+        "webpack-cli": "^4.9.2",
+        "webpack-dev-server": "^4.8.1"
+    }
+}
