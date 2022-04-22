@@ -16,7 +16,7 @@ export default function logIn(passUser) {
             // The signed-in user info.
             const user = result.user;
             // ...
-            console.log("Logged in! Hello", user.displayName);
+            console.log("Logged in! Hello", user.displayName, "!");
             passUser(user);
         })
         .catch((error) => {
@@ -28,6 +28,6 @@ export default function logIn(passUser) {
             // The AuthCredential type that was used.
             const credential = GoogleAuthProvider.credentialFromError(error);
             // ...
-            console.log("Authentication Error!");
+            console.log("Error logging in!");
         });
 }

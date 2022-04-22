@@ -46,7 +46,7 @@ class App extends React.Component {
                 <div className="App">
                     <header className="App-header">
                         <p>Hello {this.state.user.displayName}!</p>
-                        <button onClick={logOut}>log out</button>
+                        <button onClick={this.handleLogOut}>log out</button>
                     </header>
                 </div>
             );
