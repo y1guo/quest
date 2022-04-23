@@ -1,6 +1,11 @@
-import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import {
+    getAuth,
+    signInWithPopup,
+    GoogleAuthProvider,
+    signOut,
+} from "firebase/auth";
 
-export default function logIn(passUser) {
+function logIn(updater) {
     console.log("Logging in...");
 
     const provider = new GoogleAuthProvider();
@@ -16,8 +21,8 @@ export default function logIn(passUser) {
             // The signed-in user info.
             const user = result.user;
             // ...
+            updater(user);
             console.log("Logged in! Hello", user.displayName, "!");
-            passUser(user);
         })
         .catch((error) => {
             // Handle Errors here.
@@ -31,3 +36,21 @@ export default function logIn(passUser) {
             console.log("Error logging in!");
         });
 }
+
+function logOut(updater) {
+    console.log("Logging out...");
+
+    const auth = getAuth();
+    signOut(auth)
+        .then(() => {
+            // Sign-out successful.
+            updater();
+            console.log("Logged out!");
+        })
+        .catch((error) => {
+            // An error happened.
+            console.log("Error logging out!");
+        });
+}
+
+export { logIn, logOut };
