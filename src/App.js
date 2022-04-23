@@ -9,20 +9,97 @@ import {
     where,
     doc,
     addDoc,
+    setDoc,
     getDocs,
+    Timestamp,
 } from "firebase/firestore";
-import { delay } from "q";
+
+class NewQuest extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            type: props.type,
+        };
+
+        this.handleClick = this.handleClick.bind(this);
+    }
+
+    async handleClick() {
+        const currentTime = Timestamp.now();
+        try {
+            const docRef = await addDoc(collection(db, "active"), {
+                id: null,
+                type: this.state.type,
+                title: "",
+                description: "",
+                note: "",
+                dateAdded: currentTime,
+                dateModified: currentTime,
+                dateActive: currentTime,
+                dateExpire: null,
+                dependency: [],
+            });
+            console.log("Document written with ID: ", docRef.id);
+        } catch (e) {
+            console.error("Error adding document: ", e);
+        }
+    }
+
+    render() {
+        return (
+            <div className="newQuest">
+                <button onClick={this.handleClick}>+</button>
+            </div>
+        );
+    }
+}
 
 class Quest extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             quest: props.quest,
+            modify: false,
         };
+
+        this.handleModify = this.handleModify.bind(this);
+        this.handleSave = this.handleSave.bind(this);
+    }
+
+    handleModify() {
+        this.setState({
+            modify: true,
+        });
+    }
+
+    async handleSave() {
+        try {
+            await setDoc(
+                doc(db, "active", this.state.quest.id),
+                this.state.quest
+            );
+            console.log("Document saved with ID: ", this.state.quest.id);
+        } catch (e) {
+            console.error("Error adding document: ", e);
+        }
     }
 
     render() {
-        return <p>{this.state.quest.title}</p>;
+        if (this.state.modify) {
+            return (
+                <div className="quest">
+                    {this.state.quest.title}
+                    <button onClick={this.handleSave}>save</button>
+                </div>
+            );
+        } else {
+            return (
+                <div className="quest">
+                    {this.state.quest.title}
+                    <button onClick={this.handleModify}>mod</button>
+                </div>
+            );
+        }
     }
 }
 
@@ -72,6 +149,7 @@ class QuestPanel extends React.Component {
             <div className="QuestPanel">
                 <h3>{this.state.title}</h3>
                 <ol>{listItems}</ol>
+                <NewQuest type={this.state.type} />
             </div>
         );
     }
