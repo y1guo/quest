@@ -10,7 +10,6 @@ import {
     doc,
     addDoc,
     setDoc,
-    getDocs,
     onSnapshot,
     Timestamp,
 } from "firebase/firestore";
@@ -65,6 +64,7 @@ class Quest extends React.Component {
 
         this.handleModify = this.handleModify.bind(this);
         this.handleSave = this.handleSave.bind(this);
+        this.textarea = this.textarea.bind(this);
     }
 
     handleModify() {
@@ -93,19 +93,48 @@ class Quest extends React.Component {
         }
     }
 
+    handleSubmit(event) {
+        event.preventDefault();
+    }
+
+    textarea(key) {
+        const handleChange = (event) => {
+            const quest = this.state.quest;
+            quest[key] = event.target.value;
+            this.setState(quest);
+        };
+        return (
+            <textarea
+                type="text"
+                name={key}
+                value={this.state.quest[key]}
+                onChange={handleChange}
+            ></textarea>
+        );
+    }
+
     render() {
         if (this.state.modify) {
             return (
                 <div className="quest">
-                    {this.state.quest.title}:
+                    <form onSubmit={this.handleSubmit}>
+                        <label>
+                            Title:
+                            {this.textarea("title")}
+                        </label>
+                    </form>
                     <button onClick={this.handleSave}>save</button>
                 </div>
             );
         } else {
             return (
                 <div className="quest">
-                    {this.state.quest.title}:
-                    {this.state.quest.dateModified.toDate().toLocaleString()}
+                    <h5>{this.state.quest.title}</h5>
+                    <p>
+                        {this.state.quest.dateModified
+                            .toDate()
+                            .toLocaleString()}
+                    </p>
                     <button onClick={this.handleModify}>mod</button>
                 </div>
             );
@@ -204,7 +233,6 @@ class App extends React.Component {
             return (
                 <div className="App">
                     <header className="App-header">
-                        <h1>Hello {this.state.user.displayName}!</h1>
                         <button onClick={this.handleLogOut}>log out</button>
                         <QuestPanel title="主线任务" type="main" />
                         <QuestPanel title="支线任务" type="side" />
