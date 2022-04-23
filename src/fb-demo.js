@@ -1,4 +1,4 @@
-import { collection, doc, addDoc, getDocs } from "firebase/firestore";
+import { collection, addDoc, getDocs } from "firebase/firestore";
 import { db } from "./init-fb";
 
 async function fsAddDoc() {

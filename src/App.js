@@ -11,6 +11,7 @@ import {
     addDoc,
     setDoc,
     getDocs,
+    onSnapshot,
     Timestamp,
 } from "firebase/firestore";
 
@@ -73,11 +74,19 @@ class Quest extends React.Component {
     }
 
     async handleSave() {
+        const quest = this.state.quest;
+        quest.dateModified = Timestamp.now();
+        // this.setState({
+        //     quest: quest,
+        // });
         try {
             await setDoc(
                 doc(db, "active", this.state.quest.id),
                 this.state.quest
             );
+            this.setState({
+                modify: false,
+            });
             console.log("Document saved with ID: ", this.state.quest.id);
         } catch (e) {
             console.error("Error adding document: ", e);
@@ -88,14 +97,15 @@ class Quest extends React.Component {
         if (this.state.modify) {
             return (
                 <div className="quest">
-                    {this.state.quest.title}
+                    {this.state.quest.title}:
                     <button onClick={this.handleSave}>save</button>
                 </div>
             );
         } else {
             return (
                 <div className="quest">
-                    {this.state.quest.title}
+                    {this.state.quest.title}:
+                    {this.state.quest.dateModified.toDate().toLocaleString()}
                     <button onClick={this.handleModify}>mod</button>
                 </div>
             );
@@ -123,18 +133,17 @@ class QuestPanel extends React.Component {
             where("type", "==", this.state.type)
         );
 
-        const querySnapshot = await getDocs(q);
-
-        const quests = [];
-        querySnapshot.forEach((doc) => {
-            // doc.data() is never undefined for query doc snapshots
-            const quest = doc.data();
-            quest.id = doc.id;
-            quests.push(quest);
-        });
-
-        this.setState({
-            quests: quests,
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+            const quests = [];
+            querySnapshot.forEach((doc) => {
+                // doc.data() is never undefined for query doc snapshots
+                const quest = doc.data();
+                quest.id = doc.id;
+                quests.push(quest);
+            });
+            this.setState({
+                quests: quests,
+            });
         });
     }
 
