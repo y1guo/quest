@@ -6,7 +6,6 @@ import { logIn, logOut } from "./auth";
 import {
     collection,
     query,
-    where,
     doc,
     addDoc,
     setDoc,
@@ -59,12 +58,13 @@ class Quest extends React.Component {
         super(props);
         this.state = {
             quest: props.quest,
+            questsId: props.questsId,
             modify: false,
         };
 
         this.handleModify = this.handleModify.bind(this);
         this.handleSave = this.handleSave.bind(this);
-        this.textarea = this.textarea.bind(this);
+        this.handleCancel = this.handleCancel.bind(this);
     }
 
     handleModify() {
@@ -76,21 +76,19 @@ class Quest extends React.Component {
     async handleSave() {
         const quest = this.state.quest;
         quest.dateModified = Timestamp.now();
-        // this.setState({
-        //     quest: quest,
-        // });
         try {
-            await setDoc(
-                doc(db, "active", this.state.quest.id),
-                this.state.quest
-            );
+            await setDoc(doc(db, "active", quest.id), quest);
             this.setState({
                 modify: false,
             });
-            console.log("Document saved with ID: ", this.state.quest.id);
+            console.log("Document saved with ID: ", quest.id);
         } catch (e) {
             console.error("Error adding document: ", e);
         }
+    }
+
+    handleCancel() {
+        this.props.reload();
     }
 
     handleSubmit(event) {
@@ -113,6 +111,26 @@ class Quest extends React.Component {
         );
     }
 
+    select(key) {
+        const handleChange = (event) => {
+            const quest = this.state.quest;
+            quest[key] = event.target.value;
+            this.setState(quest);
+        };
+        return (
+            <select
+                multiple={true}
+                value={this.state.quest[key]}
+                onChange={handleChange}
+            >
+                <option value="grapefruit">Grapefruit</option>
+                <option value="lime">Lime</option>
+                <option value="coconut">Coconut</option>
+                <option value="mango">Mango</option>
+            </select>
+        );
+    }
+
     render() {
         if (this.state.modify) {
             return (
@@ -122,7 +140,16 @@ class Quest extends React.Component {
                             Title:
                             {this.textarea("title")}
                         </label>
+                        <label>
+                            Description:
+                            {this.textarea("description")}
+                        </label>
+                        <label>
+                            Dependency:
+                            {this.select("dependency")}
+                        </label>
                     </form>
+                    <button onClick={this.handleCancel}>cancel</button>
                     <button onClick={this.handleSave}>save</button>
                 </div>
             );
@@ -130,6 +157,8 @@ class Quest extends React.Component {
             return (
                 <div className="quest">
                     <h5>{this.state.quest.title}</h5>
+                    <p>{this.state.quest.description}</p>
+                    <p>Depending on:{this.state.quest.dependency}</p>
                     <p>
                         {this.state.quest.dateModified
                             .toDate()
@@ -143,51 +172,27 @@ class Quest extends React.Component {
 }
 
 class QuestPanel extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            title: props.title,
-            type: props.type,
-            quests: [],
-        };
-    }
-
-    componentDidMount() {
-        this.fetchQuest();
-    }
-
-    async fetchQuest() {
-        const q = query(
-            collection(db, "active"),
-            where("type", "==", this.state.type)
-        );
-
-        const unsubscribe = onSnapshot(q, (querySnapshot) => {
-            const quests = [];
-            querySnapshot.forEach((doc) => {
-                // doc.data() is never undefined for query doc snapshots
-                const quest = doc.data();
-                quest.id = doc.id;
-                quests.push(quest);
-            });
-            this.setState({
-                quests: quests,
-            });
-        });
-    }
-
     render() {
-        console.log("QuestPanel updated:", this.state);
-        const listItems = this.state.quests.map((quest) => (
-            <li key={quest.id}>
-                <Quest quest={quest} />
-            </li>
-        ));
+        const questsId = this.props.quests.map((quest) => quest.id);
+        const listItems = this.props.quests
+            .filter((quest) => {
+                return quest.type === this.props.type;
+            })
+            .map((quest) => (
+                <li key={quest.id}>
+                    <Quest
+                        quest={quest}
+                        reload={this.props.reload}
+                        questsId={questsId}
+                    />
+                </li>
+            ));
+        // console.log(this.state.type, listItems);
         return (
             <div className="QuestPanel">
-                <h3>{this.state.title}</h3>
+                <h3>{this.props.title}</h3>
                 <ol>{listItems}</ol>
-                <NewQuest type={this.state.type} />
+                <NewQuest type={this.props.type} />
             </div>
         );
     }
@@ -198,10 +203,14 @@ class App extends React.Component {
         super(props);
         this.state = {
             user: null,
+            quests: [],
+            unsubscribe: null,
+            updatedTime: Timestamp.now(),
         };
 
         this.handleLogIn = this.handleLogIn.bind(this);
         this.handleLogOut = this.handleLogOut.bind(this);
+        this.fetchQuest = this.fetchQuest.bind(this);
     }
 
     handleLogIn() {
@@ -209,15 +218,48 @@ class App extends React.Component {
             this.setState({
                 user: user,
             });
+            this.fetchQuest();
         });
     }
 
     handleLogOut() {
+        this.state.unsubscribe();
         logOut(() => {
             this.setState({
                 user: null,
             });
         });
+    }
+
+    async fetchQuest() {
+        if (this.state.unsubscribe) {
+            this.state.unsubscribe();
+        }
+
+        try {
+            const q = query(collection(db, "active"));
+            const unsubscribe = onSnapshot(q, (querySnapshot) => {
+                const quests = [];
+                querySnapshot.forEach((doc) => {
+                    // doc.data() is never undefined for query doc snapshots
+                    const quest = doc.data();
+                    quest.id = doc.id;
+                    quests.push(quest);
+                });
+                this.setState({
+                    quests: [...quests],
+                });
+            });
+
+            this.setState({
+                unsubscribe: unsubscribe,
+                updatedTime: Timestamp.now(),
+            });
+
+            console.log("reloaded");
+        } catch (e) {
+            console.error("Error fetchQuest! ", e);
+        }
     }
 
     render() {
@@ -233,11 +275,35 @@ class App extends React.Component {
             return (
                 <div className="App">
                     <header className="App-header">
+                        <p>
+                            Last Update:{" "}
+                            {this.state.updatedTime.toDate().toLocaleString()}
+                        </p>
                         <button onClick={this.handleLogOut}>log out</button>
-                        <QuestPanel title="主线任务" type="main" />
-                        <QuestPanel title="支线任务" type="side" />
-                        <QuestPanel title="每日任务" type="daily" />
-                        <QuestPanel title="可选任务" type="optional" />
+                        <QuestPanel
+                            title="main quests"
+                            type="main"
+                            quests={this.state.quests}
+                            reload={this.fetchQuest}
+                        />
+                        <QuestPanel
+                            title="side quests"
+                            type="side"
+                            quests={this.state.quests}
+                            reload={this.fetchQuest}
+                        />
+                        <QuestPanel
+                            title="daily quests"
+                            type="daily"
+                            quests={this.state.quests}
+                            reload={this.fetchQuest}
+                        />
+                        <QuestPanel
+                            title="optional quests"
+                            type="optional"
+                            quests={this.state.quests}
+                            reload={this.fetchQuest}
+                        />
                     </header>
                 </div>
             );
