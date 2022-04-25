@@ -1,0 +1,16 @@
+.QuestPanelTitle {
+    display: flex;
+    align-items: center;
+}
+
+.QuestPanelTitle li {
+    display: inline-block;
+}
+
+.QuestPanel h3 {
+    margin: 0;
+}
+
+.QuestPanelTitle li:first-child {
+    margin-right: 1em;
+}
