@@ -1,8 +1,0 @@
-.QuestDetailView {
-    display: block;
-}
-
-.QuestDetailView .Title {
-    display: flex;
-    align-items: flex-start;
-}

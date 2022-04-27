@@ -25,5 +25,3 @@ const analytics = getAnalytics(app);
 const db = getFirestore(app);
 
 export { db };
-
-console.log("Firebase initiated!");

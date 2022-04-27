@@ -1,23 +1,20 @@
 .App {
-    text-align: left;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
     color: white;
-}
-
-.App ul {
-    list-style-type: none;
-    overflow: hidden;
+    background-color: #282c34;
 }
 
 .App button {
     background-color: #282c34;
     border: none;
     color: white;
-    padding: 10px 10px;
-    border-radius: 5px;
+    padding: 0.5em;
+    border-radius: 0.3em;
     text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
+    font-size: 1em;
     transition-duration: 0.3s;
     cursor: pointer;
 }
@@ -33,7 +30,7 @@
 .App textarea {
     background-color: #282c34;
     border: none;
-    border-radius: 5px;
+    border-radius: 0.3em;
     outline: none;
     padding: 0.5em;
     color: white;
@@ -41,31 +38,10 @@
     font-family: inherit;
     line-height: 1.4;
     resize: none;
+    transition-duration: 0.2s;
+    width: 100%;
 }
 
 .App textarea:focus {
-    background-color: #22262e;
-}
-
-.QuestContainer {
-    padding-top: 75px;
-    display: flex;
-}
-
-.QuestOverview {
-    display: inline-block;
-    width: 40%;
-}
-
-.QuestOverview > ul {
-    padding: 0;
-}
-
-.QuestDetailView {
-    display: inline-block;
-    width: 60%;
-}
-
-.sticky {
-    position: fixed;
+    background-color: #1c1e24;
 }

@@ -1,4 +1,6 @@
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { doc } from "firebase/firestore";
+import { db } from "./firebase";
 
 const auth = getAuth();
 
@@ -29,4 +31,9 @@ function logout() {
         });
 }
 
-export { auth, login, logout };
+function userPath() {
+    const docRef = doc(db, "users", auth.currentUser.uid);
+    return docRef.path;
+}
+
+export { auth, login, logout, userPath };

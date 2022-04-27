@@ -5,5 +5,16 @@ const questTypeNames = {
     side: "支线任务",
     optional: "可选任务",
 };
+const questFieldNames = {
+    dateActive: "Active",
+    dateAdded: "Created",
+    dateExpire: "Expire",
+    dateModified: "Modified",
+    prerequisite: "Prerequisite",
+    description: "Description",
+    note: "Note",
+    title: "Title",
+    type: "Type",
+};
 
-export { questTypes, questTypeNames };
+export { questTypes, questTypeNames, questFieldNames };

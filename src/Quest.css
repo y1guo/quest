@@ -1,0 +1,51 @@
+.Quest {
+    display: flex;
+    flex-basis: auto;
+    flex-grow: 1;
+    overflow: hidden;
+    margin-inline: 1em;
+}
+
+.QuestListView {
+    flex-basis: auto;
+    flex-grow: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.QuestListTitleBar {
+    display: flex;
+    align-items: center;
+}
+
+.QuestListTitle .title {
+    font-size: x-large;
+    font-weight: bold;
+    /* padding-left: 0; */
+}
+
+.QuestListItems > button {
+    display: block;
+    /* width: 100%; */
+    text-align: left;
+}
+
+.QuestDetailView {
+    flex-basis: 50%;
+    flex-grow: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/* .QuestDetail textarea {
+    overflow: hidden;
+} */
+
+.QuestDetail .Title {
+    font-weight: bold;
+    font-size: large;
+}
+
+.QuestDetailTools button:active {
+    background-color: #1f2228;
+}
