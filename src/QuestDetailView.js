@@ -19,17 +19,24 @@ function Textarea(props) {
     };
 
     return (
-        <div className="Textarea">
+        <div className="Textarea textarea-wrapper">
             <textarea
+                className={props.field}
                 placeholder={questFieldNames[props.field]}
                 value={props.quest[props.field]}
                 onChange={onChange}
+                onInput={(e) => {
+                    e.target.style.height = "inherit";
+                    e.target.style.height =
+                        e.target.scrollHeight.toString() + "px";
+                }}
             ></textarea>
         </div>
     );
 }
+// 'this.style.height = "";this.style.height = this.scrollHeight + "px"'
 
-function QuestDetail(props) {
+function QuestDetailView(props) {
     const [quest, setQuest] = useState(
         copyQuest(props.activeQuests[props.questIdOnFocus])
     );
@@ -65,36 +72,38 @@ function QuestDetail(props) {
     };
 
     return (
-        <div className="QuestDetail">
+        <div className="QuestDetailView">
             <div className="QuestDetailTools">
                 <button onClick={onClickSave}>Save</button>
                 <button onClick={onClickCancel}>Cancel</button>
                 <button onClick={onClickTrash}>Del</button>
                 <button onClick={onClickClose}>&nbsp;X&nbsp;</button>
             </div>
-            <div className="Title">
+            <div className="QuestDetail">
+                <div className="Title">
+                    <Textarea
+                        quest={quest}
+                        setQuest={setQuest}
+                        field="title"
+                    ></Textarea>
+                </div>
+                {/* <div className="Description"> */}
                 <Textarea
                     quest={quest}
                     setQuest={setQuest}
-                    field="title"
+                    field="description"
                 ></Textarea>
-            </div>
-            {/* <div className="Description"> */}
-            <Textarea
-                quest={quest}
-                setQuest={setQuest}
-                field="description"
-            ></Textarea>
-            {/* </div> */}
-            <div className="Note">
-                <Textarea
-                    quest={quest}
-                    setQuest={setQuest}
-                    field="note"
-                ></Textarea>
+                {/* </div> */}
+                <div className="Note">
+                    <Textarea
+                        quest={quest}
+                        setQuest={setQuest}
+                        field="note"
+                    ></Textarea>
+                </div>
             </div>
         </div>
     );
 }
 
-export default QuestDetail;
+export default QuestDetailView;

@@ -4,7 +4,7 @@ import { collection, query, onSnapshot } from "firebase/firestore";
 import { db } from "./firebase";
 import { questTypes } from "./appMeta";
 import QuestList from "./QuestList";
-import QuestDetail from "./QuestDetail";
+import QuestDetailView from "./QuestDetailView";
 import { userPath } from "./auth";
 
 function QuestListView(props) {
@@ -28,20 +28,6 @@ function QuestListView(props) {
                     setQuestIdOnFocus={props.setQuestIdOnFocus}
                 ></QuestList>
             ))}
-        </div>
-    );
-}
-
-function QuestDetailView(props) {
-    return (
-        <div className="QuestDetailView">
-            {props.questIdOnFocus && (
-                <QuestDetail
-                    activeQuests={props.activeQuests}
-                    questIdOnFocus={props.questIdOnFocus}
-                    setQuestIdOnFocus={props.setQuestIdOnFocus}
-                ></QuestDetail>
-            )}
         </div>
     );
 }
@@ -73,11 +59,13 @@ function Quest() {
                 questIdOnFocus={questIdOnFocus}
                 setQuestIdOnFocus={setQuestIdOnFocus}
             ></QuestListView>
-            <QuestDetailView
-                activeQuests={activeQuests}
-                questIdOnFocus={questIdOnFocus}
-                setQuestIdOnFocus={setQuestIdOnFocus}
-            ></QuestDetailView>
+            {questIdOnFocus && (
+                <QuestDetailView
+                    activeQuests={activeQuests}
+                    questIdOnFocus={questIdOnFocus}
+                    setQuestIdOnFocus={setQuestIdOnFocus}
+                ></QuestDetailView>
+            )}
         </div>
     );
 }

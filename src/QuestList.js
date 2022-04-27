@@ -8,8 +8,12 @@ function QuestList(props) {
     const questListItems = props.questIds.map((id) => (
         <button
             key={id}
-            className={id === props.questIdOnFocus ? "active" : null}
-            onClick={() => props.setQuestIdOnFocus(id)}
+            className={id === props.questIdOnFocus ? "active" : undefined}
+            onClick={() => {
+                id === props.questIdOnFocus
+                    ? props.setQuestIdOnFocus(null)
+                    : props.setQuestIdOnFocus(id);
+            }}
         >
             {props.activeQuests[id].title
                 ? props.activeQuests[id].title
