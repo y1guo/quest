@@ -30,6 +30,23 @@
     background-color: #484c54;
 }
 
+.App textarea {
+    background-color: #282c34;
+    border: none;
+    border-radius: 5px;
+    outline: none;
+    padding: 0.5em;
+    color: white;
+    font-size: initial;
+    font-family: inherit;
+    line-height: 1.4;
+    resize: none;
+}
+
+.App textarea:focus {
+    background-color: #22262e;
+}
+
 .QuestContainer {
     padding-top: 75px;
     display: flex;

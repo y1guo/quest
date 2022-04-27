@@ -12,7 +12,9 @@ function QuestPanel(props) {
                     className={id === props.questIdOnFocus ? "active" : null}
                     onClick={() => props.setQuestIdOnFocus(id)}
                 >
-                    {props.activeQuests[id].title}
+                    {props.activeQuests[id].title
+                        ? props.activeQuests[id].title
+                        : "New Quest"}
                 </button>
             </li>
         ));
@@ -22,7 +24,7 @@ function QuestPanel(props) {
         const currentTime = Timestamp.now();
         addDoc(collection(db, "active"), {
             type: props.type,
-            title: "new quest",
+            title: "",
             description: "",
             note: "",
             dateAdded: currentTime,
