@@ -66,3 +66,17 @@
     font-weight: bold;
     font-size: large;
 }
+
+/* an overview for desktop screen */
+@media (orientation: landscape) and (min-width: 1280px) {
+    .QuestListView {
+        display: flex;
+    }
+    .QuestList {
+        flex-basis: 25%;
+        flex-grow: 0;
+    }
+    .QuestDetailView {
+        flex-basis: 40%;
+    }
+}
