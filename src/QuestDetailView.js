@@ -1,7 +1,7 @@
 import { deleteDoc, doc, setDoc, Timestamp } from "firebase/firestore";
 import { db } from "./firebase";
 import { userPath } from "./auth";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { questFieldNames } from "./appMeta";
 
 function copyQuest(quest) {
@@ -18,6 +18,16 @@ function Textarea(props) {
         props.setQuest(newQuest);
     };
 
+    // auto resize textarea!
+    const textareaRef = useRef(null);
+    useEffect(() => {
+        if (textareaRef && textareaRef.current) {
+            const target = textareaRef.current;
+            target.style.height = "inherit";
+            target.style.height = target.scrollHeight.toString() + "px";
+        }
+    }, [props.quest]);
+
     return (
         <div className="Textarea textarea-wrapper">
             <textarea
@@ -25,11 +35,7 @@ function Textarea(props) {
                 placeholder={questFieldNames[props.field]}
                 value={props.quest[props.field]}
                 onChange={onChange}
-                onInput={(e) => {
-                    e.target.style.height = "inherit";
-                    e.target.style.height =
-                        e.target.scrollHeight.toString() + "px";
-                }}
+                ref={textareaRef}
             ></textarea>
         </div>
     );
@@ -38,7 +44,7 @@ function Textarea(props) {
 
 function QuestDetailView(props) {
     const [quest, setQuest] = useState(
-        copyQuest(props.activeQuests[props.questIdOnFocus])
+        copyQuest(copyQuest(props.activeQuests[props.questIdOnFocus]))
     );
     useEffect(() => {
         setQuest(copyQuest(props.activeQuests[props.questIdOnFocus]));
@@ -80,27 +86,21 @@ function QuestDetailView(props) {
                 <button onClick={onClickClose}>&nbsp;X&nbsp;</button>
             </div>
             <div className="QuestDetail">
-                <div className="Title">
-                    <Textarea
-                        quest={quest}
-                        setQuest={setQuest}
-                        field="title"
-                    ></Textarea>
-                </div>
-                {/* <div className="Description"> */}
+                <Textarea
+                    quest={quest}
+                    setQuest={setQuest}
+                    field="title"
+                ></Textarea>
                 <Textarea
                     quest={quest}
                     setQuest={setQuest}
                     field="description"
                 ></Textarea>
-                {/* </div> */}
-                <div className="Note">
-                    <Textarea
-                        quest={quest}
-                        setQuest={setQuest}
-                        field="note"
-                    ></Textarea>
-                </div>
+                <Textarea
+                    quest={quest}
+                    setQuest={setQuest}
+                    field="note"
+                ></Textarea>
             </div>
         </div>
     );
