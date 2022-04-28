@@ -12,3 +12,7 @@
     display: flex;
     align-items: center;
 }
+
+.Menu .username {
+    margin-inline: 0.5em;
+}

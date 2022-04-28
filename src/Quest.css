@@ -1,14 +1,14 @@
 .Quest {
     display: flex;
     gap: 0.5em;
-    flex-basis: auto;
+    flex-basis: 0%;
     flex-grow: 1;
     overflow: hidden;
     margin-inline: 1em;
 }
 
 .QuestListView {
-    flex-basis: 30%;
+    flex-basis: 0%;
     flex-grow: 1;
     overflow-x: hidden;
     overflow-y: auto;
@@ -34,13 +34,28 @@
 .QuestDetailView {
     display: flex;
     flex-direction: column;
-    flex-basis: 50%;
-    flex-grow: 1;
+    flex-basis: 100%;
+    flex-grow: 0;
     overflow: hidden;
+}
+
+@media (orientation: landscape), (min-width: 768px) {
+    .QuestDetailView {
+        flex-basis: 60%;
+    }
+}
+
+.QuestDetailTools {
+    display: flex;
+    justify-content: right;
 }
 
 .QuestDetailTools button:active {
     background-color: #1f2228;
+}
+
+.QuestDetail {
+    overflow: auto;
 }
 
 .QuestDetail .title {

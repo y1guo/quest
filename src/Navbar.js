@@ -5,7 +5,7 @@ import Clock from "./Clock";
 function MenuBar() {
     return (
         <div className="Menu">
-            <h3 className="username">{auth.currentUser.displayName}</h3>
+            <h2 className="username">{auth.currentUser.displayName}</h2>
             <button className="logout" onClick={logout}>
                 Log Out
             </button>
