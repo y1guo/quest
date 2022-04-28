@@ -61,16 +61,20 @@ function QuestDetailView(props) {
     };
 
     const onClickTrash = () => {
-        setDoc(
-            doc(db, userPath(), "trash", props.questIdOnFocus),
-            props.activeQuests[props.questIdOnFocus]
-        )
-            .then(() => {
-                deleteDoc(doc(db, userPath(), "active", props.questIdOnFocus));
-            })
-            .then(() => {
-                props.setQuestIdOnFocus(null);
-            });
+        if (window.confirm("Do you really want to DELETE？")) {
+            setDoc(
+                doc(db, userPath(), "trash", props.questIdOnFocus),
+                props.activeQuests[props.questIdOnFocus]
+            )
+                .then(() => {
+                    deleteDoc(
+                        doc(db, userPath(), "active", props.questIdOnFocus)
+                    );
+                })
+                .then(() => {
+                    props.setQuestIdOnFocus(null);
+                });
+        }
     };
 
     const onClickClose = () => {
@@ -83,7 +87,7 @@ function QuestDetailView(props) {
                 <button onClick={onClickSave}>Save</button>
                 <button onClick={onClickCancel}>Cancel</button>
                 <button onClick={onClickTrash}>Del</button>
-                <button onClick={onClickClose}>&nbsp;X&nbsp;</button>
+                <button onClick={onClickClose}>Close</button>
             </div>
             <div className="QuestDetail">
                 <Textarea

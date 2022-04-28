@@ -50,6 +50,10 @@
     justify-content: right;
 }
 
+.QuestDetailView button {
+    margin-inline: 1em;
+}
+
 .QuestDetailTools button:active {
     background-color: #1f2228;
 }
