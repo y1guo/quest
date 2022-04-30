@@ -27,7 +27,6 @@ export default function Dashboard() {
         }}
       >
         <Container sx={{ padding: 0, overflow: "auto" }}>
-          {/* <Container> */}
           {page === "Dashboard" ? (
             <DashboardContent />
           ) : page === "Quests" ? (
@@ -37,7 +36,6 @@ export default function Dashboard() {
           ) : page === "Settings" ? (
             <Settings />
           ) : null}
-          {/* </Container> */}
         </Container>
         <FixedBottomNavigation page={page} setPage={setPage} />
       </Box>

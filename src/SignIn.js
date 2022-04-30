@@ -28,7 +28,7 @@ export default function SignIn() {
   //   });
   // };
 
-  const handleSubmitGoogle = (event) => {
+  const handleSubmitGoogle = () => {
     signInWithPopup(auth, new GoogleAuthProvider());
   };
 
@@ -100,17 +100,13 @@ export default function SignIn() {
               </Grid>
             </Grid>
           </Box> */}
-          <Box
-            component="form"
-            onSubmit={handleSubmitGoogle}
-            noValidate
-            sx={{ mt: 1 }}
-          >
+          <Box>
             <Button
               type="submit"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              onClick={handleSubmitGoogle}
             >
               Sign In With Google
             </Button>
