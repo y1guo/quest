@@ -143,7 +143,7 @@ function CustomizedAccordions(props) {
           severity={"success"}
           sx={{ width: "100%" }}
         >
-          This is a success message!
+          Quest Saved
         </Alert>
       </Snackbar>
       <Snackbar
@@ -156,7 +156,7 @@ function CustomizedAccordions(props) {
           severity={"error"}
           sx={{ width: "100%" }}
         >
-          This is an error message!
+          Couldn't Save Quest!
         </Alert>
       </Snackbar>
     </div>

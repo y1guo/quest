@@ -1,12 +1,17 @@
-import { Paper, BottomNavigation, BottomNavigationAction } from "@mui/material";
+import {
+  Box,
+  Paper,
+  BottomNavigation,
+  BottomNavigationAction,
+} from "@mui/material";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import SettingsIcon from "@mui/icons-material/Settings";
 import TaskOutlinedIcon from "@mui/icons-material/TaskOutlined";
 
-export default function FixedBottomNavigation(props) {
+export default function BottomNavigationBar(props) {
   return (
-    <Paper elevation={3}>
+    <Paper sx={{ backgroundImage: "none" }} elevation={3}>
       <BottomNavigation
         showLabels
         value={props.page}
@@ -37,6 +42,7 @@ export default function FixedBottomNavigation(props) {
           icon={<SettingsIcon />}
         />
       </BottomNavigation>
+      <Box sx={{ height: "20px" }}></Box>
     </Paper>
   );
 }
