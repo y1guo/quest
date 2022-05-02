@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
@@ -17,7 +17,17 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { questTypes, questTypeNames, questFieldNames } from "../appMeta";
 import { createEmptyQuest, saveQuest } from "../firebase/database";
-import { Alert, Box, Divider, Snackbar, Stack, TextField } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Divider,
+  Paper,
+  Snackbar,
+  Stack,
+  TextField,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 
 // Quest Editting Panel
 
@@ -57,13 +67,13 @@ function EditQuest(props) {
 const Accordion = styled((props) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />
 ))(({ theme }) => ({
-  border: `1px solid ${theme.palette.divider}`,
-  "&:not(:last-child)": {
-    borderBottom: 0,
-  },
-  "&:before": {
-    display: "none",
-  },
+  // border: `1px solid ${theme.palette.divider}`,
+  // "&:not(:last-child)": {
+  //   borderBottom: 0,
+  // },
+  // "&:before": {
+  //   display: "none",
+  // },
 }));
 
 const AccordionSummary = styled((props) => (
@@ -74,8 +84,8 @@ const AccordionSummary = styled((props) => (
 ))(({ theme }) => ({
   backgroundColor:
     theme.palette.mode === "dark"
-      ? "rgba(255, 255, 255, .05)"
-      : "rgba(0, 0, 0, .03)",
+      ? "rgba(255, 255, 255, .0)"
+      : "rgba(0, 0, 0, .0)",
   flexDirection: "row-reverse",
   "& .MuiAccordionSummary-expandIconWrapper.Mui-expanded": {
     transform: "rotate(90deg)",
@@ -86,8 +96,8 @@ const AccordionSummary = styled((props) => (
 }));
 
 const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
-  padding: theme.spacing(2),
-  borderTop: "1px solid rgba(0, 0, 0, .125)",
+  padding: theme.spacing(1),
+  borderTop: "1px solid rgba(0, 0, 0, .0 )",
 }));
 
 function CustomizedAccordions(props) {
@@ -118,8 +128,12 @@ function CustomizedAccordions(props) {
   };
 
   return (
-    <div>
-      <Accordion expanded={expanded} onChange={toggleExpanded}>
+    <Box>
+      <Accordion
+        expanded={expanded}
+        onChange={toggleExpanded}
+        TransitionProps={{ unmountOnExit: true }}
+      >
         <AccordionSummary>
           <Typography>{quest.title ? quest.title : "New Quest"}</Typography>
         </AccordionSummary>
@@ -135,7 +149,7 @@ function CustomizedAccordions(props) {
       </Accordion>
       <Snackbar
         open={openSnackBarSuccess}
-        autoHideDuration={6000}
+        autoHideDuration={4000}
         onClose={handleCloseSnackBarSuccess}
       >
         <Alert
@@ -148,7 +162,7 @@ function CustomizedAccordions(props) {
       </Snackbar>
       <Snackbar
         open={openSnackBarError}
-        autoHideDuration={6000}
+        autoHideDuration={4000}
         onClose={handleCloseSnackBarError}
       >
         <Alert
@@ -159,7 +173,7 @@ function CustomizedAccordions(props) {
           Couldn't Save Quest!
         </Alert>
       </Snackbar>
-    </div>
+    </Box>
   );
 }
 
@@ -187,8 +201,20 @@ export default function QuestCard(props) {
     createEmptyQuest(props.type);
   };
 
+  // media query
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   return (
-    <Card sx={{ width: "100%", height: "auto" }} elevation={0}>
+    <Card
+      sx={{
+        width: isMobile ? "calc(100vw - 2rem)" : "25rem",
+        marginX: isMobile ? "1rem" : "0.5rem",
+        marginTop: "1rem",
+        flexShrink: 1,
+      }}
+      elevation={3}
+    >
       <CardHeader
         avatar={
           <ExpandMore
@@ -209,7 +235,7 @@ export default function QuestCard(props) {
         }
       />
       <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <CardContent>
+        <CardContent sx={{ padding: 0 }}>
           {props.questIdByType[props.type].map((id) => (
             <CustomizedAccordions
               key={id}

@@ -6,7 +6,14 @@ import FormGroup from "@mui/material/FormGroup";
 import Switch from "@mui/material/Switch";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
-import { Box, Button, Divider, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Container,
+  Divider,
+  Stack,
+  Typography,
+} from "@mui/material";
 
 function Entry(props) {
   return (
@@ -89,12 +96,14 @@ function SampleSwitch() {
 
 export default function Settings(props) {
   return (
-    <Stack spacing={1} padding={3} divider={<Divider />}>
-      <UserSettings />
-      <ThemeSettings
-        themeSetting={props.themeSetting}
-        setThemeSetting={props.setThemeSetting}
-      />
-    </Stack>
+    <Container sx={{ padding: 0 }}>
+      <Stack spacing={1} padding={3} divider={<Divider />}>
+        <UserSettings />
+        <ThemeSettings
+          themeSetting={props.themeSetting}
+          setThemeSetting={props.setThemeSetting}
+        />
+      </Stack>
+    </Container>
   );
 }

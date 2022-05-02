@@ -3,16 +3,23 @@ import {
   Paper,
   BottomNavigation,
   BottomNavigationAction,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import SettingsIcon from "@mui/icons-material/Settings";
 import TaskOutlinedIcon from "@mui/icons-material/TaskOutlined";
 
-export default function BottomNavigationBar(props) {
+export default function NavigationBar(props) {
+  // media query
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   return (
-    <Paper sx={{ backgroundImage: "none" }} elevation={3}>
+    <Paper elevation={3}>
       <BottomNavigation
+        sx={{ backgroundColor: "transparent" }}
         showLabels
         value={props.page}
         onChange={(event, newPage) => {
@@ -42,7 +49,7 @@ export default function BottomNavigationBar(props) {
           icon={<SettingsIcon />}
         />
       </BottomNavigation>
-      <Box sx={{ height: "20px" }}></Box>
+      {isMobile && <Box sx={{ height: "20px" }}></Box>}
     </Paper>
   );
 }

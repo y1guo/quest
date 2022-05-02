@@ -1,7 +1,7 @@
 import "./firebase/init";
 import { getAuth } from "firebase/auth";
 import React, { useEffect, useState } from "react";
-import { Box, Container, CssBaseline } from "@mui/material";
+import { Box, Container, CssBaseline, Paper } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import SignIn from "./SignIn";
@@ -9,7 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import Quests from "./pages/Quests";
 import Calendar from "./pages/Calendar";
 import Settings from "./pages/Settings";
-import BottomNavigationBar from "./components/BottomNavigationBar";
+import NavigationBar from "./components/NavigationBar";
 
 // const [theme, setTheme] = useState(createTheme());
 // const theme = createTheme({
@@ -49,20 +49,23 @@ function App() {
   // select which page to display
   const [page, setPage] = useState("Dashboard");
 
+  // media query
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       {user ? (
         <Box
           sx={{
-            width: window.innerWidth,
-            height: window.innerHeight,
+            width: "100%",
+            height: "100%",
             display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
+            alignItems: "center",
+            flexDirection: isMobile ? "column" : "column-reverse",
           }}
         >
-          <Container sx={{ padding: 0, overflow: "auto" }}>
+          <Box sx={{ overflow: "auto", flexGrow: 1 }}>
             {page === "Dashboard" ? (
               <Dashboard />
             ) : page === "Quests" ? (
@@ -75,8 +78,10 @@ function App() {
                 setThemeSetting={setThemeSetting}
               />
             ) : null}
-          </Container>
-          <BottomNavigationBar page={page} setPage={setPage} />
+          </Box>
+          <Box width={"100%"}>
+            <NavigationBar page={page} setPage={setPage} />
+          </Box>
         </Box>
       ) : (
         <SignIn />

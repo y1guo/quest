@@ -1,4 +1,4 @@
-import { Box, Stack, Divider } from "@mui/material";
+import { Box, Stack, Divider, useMediaQuery, useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
 import QuestCard from "../components/QuestCard";
 import "../firebase/database";
@@ -23,8 +23,18 @@ export default function Quests() {
     questIdByType[quest.type].push(id);
   }
 
+  // media query
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   return (
-    <Stack spacing={0} padding={0} divider={<Divider />}>
+    <Stack
+      spacing={0}
+      padding={0}
+      alignItems={isMobile ? "center" : "right"}
+      justifyContent={isMobile ? "flex-start" : "center"}
+      direction={isMobile ? "column" : "row"}
+    >
       {questTypes.map((type) => (
         <QuestCard
           key={type}
