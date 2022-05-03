@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { styled } from "@mui/material/styles";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
@@ -20,14 +20,39 @@ import { createEmptyQuest, saveQuest } from "../firebase/database";
 import {
   Alert,
   Box,
+  Button,
+  CardActionArea,
+  Dialog,
+  DialogActions,
+  DialogTitle,
   Divider,
+  Fade,
+  Grow,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
   Paper,
+  Slide,
   Snackbar,
   Stack,
   TextField,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import {
+  pink,
+  amber,
+  orange,
+  blue,
+  cyan,
+  blueGrey,
+  deepOrange,
+  red,
+} from "@mui/material/colors";
+import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import { Timestamp } from "firebase/firestore";
 
 // Quest Editting Panel
 
@@ -191,59 +216,134 @@ const ExpandMore = styled((props) => {
 }));
 
 export default function QuestCard(props) {
-  const [expanded, setExpanded] = useState(true);
-
-  const handleExpandClick = () => {
-    setExpanded(!expanded);
-  };
-
-  const handleNewQuestClick = () => {
-    createEmptyQuest(props.type);
-  };
-
   // media query
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
+  // color of the card depending on quest type
+  const color =
+    props.quest.type === "main"
+      ? theme.palette.mode === "light"
+        ? pink[100]
+        : "#801313"
+      : props.quest.type === "side"
+      ? theme.palette.mode === "light"
+        ? orange[200]
+        : "#ab5810"
+      : props.quest.type === "optional"
+      ? theme.palette.mode === "light"
+        ? cyan[200]
+        : "#004346"
+      : props.quest.type === "daily"
+      ? theme.palette.mode === "light"
+        ? blue[200]
+        : "#093170"
+      : null;
+
+  // card expanded or not
+  const [expanded, setExpanded] = useState(false);
+
+  // menu
+  const [anchorEl, setAnchorEl] = useState(null);
+  const openMenu = Boolean(anchorEl);
+  const handleClickMore = (event) => setAnchorEl(event.currentTarget);
+  const [openConfirmDelete, setOpenConfirmDelete] = useState(false);
+  const handleDelete = () => {
+    console.log("QuestCards: Delete: confirm delete");
+  };
+  const lastEdit = () => {
+    const seconds =
+      (Timestamp.now().toMillis() - props.quest.dateModified.toMillis()) / 1000;
+    return seconds < 120
+      ? Math.round(seconds).toString() + " secs"
+      : seconds / 60 < 120
+      ? Math.round(seconds / 60).toString() + " mins"
+      : seconds / 3600 < 48
+      ? Math.round(seconds / 3600).toString() + " hours"
+      : Math.round(seconds / 86400).toString() + " days";
+  };
+
   return (
-    <Card
-      sx={{
-        width: isMobile ? "calc(100vw - 2rem)" : "25rem",
-        marginX: isMobile ? "1rem" : "0.5rem",
-        marginTop: "1rem",
-        flexShrink: 1,
-      }}
-      elevation={3}
-    >
-      <CardHeader
-        avatar={
-          <ExpandMore
-            expand={expanded}
-            onClick={handleExpandClick}
-            aria-expanded={expanded}
-            aria-label="show more"
-          >
-            <ExpandMoreIcon />
-          </ExpandMore>
-        }
-        title={questTypeNames[props.type]}
-        titleTypographyProps={{ fontSize: "1.5rem" }}
-        action={
-          <IconButton onClick={handleNewQuestClick}>
-            <AddIcon />
+    <Card elevation={3} sx={{ backgroundColor: color }}>
+      <CardActionArea onClick={() => setExpanded(!expanded)}>
+        <Typography variant="h6" padding={2}>
+          {props.quest.title}
+        </Typography>
+      </CardActionArea>
+      <Collapse
+        in={expanded}
+        timeout={props.settings.enableAnimation.value ? "auto" : 0}
+        unmountOnExit
+      >
+        <Box sx={{ display: "flex", alignItems: "center", pl: 2 }}>
+          <EditOutlinedIcon fontSize="small" />
+          <Typography variant="body2" pl={0.5} color="text.secondary">
+            {lastEdit() + " "}
+            ago
+          </Typography>
+          <IconButton sx={{ ml: "auto" }} onClick={handleClickMore}>
+            <MoreVertIcon />
           </IconButton>
-        }
-      />
-      <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <CardContent sx={{ padding: 0 }}>
-          {props.questIdByType[props.type].map((id) => (
-            <CustomizedAccordions
-              key={id}
-              id={id}
-              activeQuests={props.activeQuests}
-              questIdByType={props.questIdByType}
-            ></CustomizedAccordions>
-          ))}
+          <Menu
+            anchorEl={anchorEl}
+            open={openMenu}
+            onClose={() => setAnchorEl(null)}
+          >
+            <MenuItem
+              onClick={() => {
+                setOpenConfirmDelete(true);
+                setAnchorEl(null);
+              }}
+            >
+              <ListItemIcon>
+                <DeleteOutlinedIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>Delete</ListItemText>
+            </MenuItem>
+          </Menu>
+          <Dialog open={openConfirmDelete}>
+            <DialogTitle>{"Do you really want to delete?"}</DialogTitle>
+            <DialogActions>
+              <Button
+                onClick={() => {
+                  setOpenConfirmDelete(false);
+                  handleDelete();
+                }}
+              >
+                Yes
+              </Button>
+              <Button
+                onClick={() => {
+                  setOpenConfirmDelete(false);
+                }}
+                autoFocus
+              >
+                No
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </Box>
+        <CardContent sx={{ pt: 0 }}>
+          <TextField
+            fullWidth
+            label={questFieldNames["title"]}
+            variant="filled"
+            multiline
+            maxRows={2}
+            InputProps={{ disableUnderline: true }}
+            margin="dense"
+            value={props.quest.title}
+          />
+          <TextField
+            fullWidth
+            label={questFieldNames["note"]}
+            variant="filled"
+            multiline
+            maxRows={20}
+            InputProps={{ disableUnderline: true }}
+            margin="dense"
+            value={props.quest.note}
+          />
         </CardContent>
       </Collapse>
     </Card>
