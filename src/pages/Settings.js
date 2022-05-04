@@ -54,9 +54,10 @@ function ThemeSettings(props) {
         <RadioGroup
           row
           onChange={(event) => {
-            props.setThemeSetting(event.target.value);
+            props.themeSetting.setter(event.target.value);
+            localStorage.setItem("theme", JSON.stringify(event.target.value));
           }}
-          value={props.themeSetting}
+          value={props.themeSetting.value}
         >
           <FormControlLabel
             value="auto"
@@ -82,15 +83,22 @@ function ThemeSettings(props) {
   );
 }
 
-function SampleSwitch() {
+function AnimationSettings(props) {
   return (
-    <FormGroup>
-      <FormControlLabel
-        control={<Switch defaultChecked />}
-        label="Follow System"
+    <Entry>
+      <Typography variant="h6">Enable Animation</Typography>
+
+      <Switch
+        checked={props.enableAnimation.value}
+        onChange={(event) => {
+          props.enableAnimation.setter(event.target.checked);
+          localStorage.setItem(
+            "enableAnimation",
+            JSON.stringify(event.target.checked)
+          );
+        }}
       />
-      <FormControlLabel disabled control={<Switch />} label="Disabled" />
-    </FormGroup>
+    </Entry>
   );
 }
 
@@ -99,10 +107,8 @@ export default function Settings(props) {
     <Container sx={{ padding: 0 }}>
       <Stack spacing={1} padding={3} divider={<Divider />}>
         <UserSettings />
-        <ThemeSettings
-          themeSetting={props.themeSetting}
-          setThemeSetting={props.setThemeSetting}
-        />
+        <ThemeSettings themeSetting={props.settings.themeSetting} />
+        <AnimationSettings enableAnimation={props.settings.enableAnimation} />
       </Stack>
     </Container>
   );
