@@ -10,10 +10,12 @@ import {
   CardActionArea,
   IconButton,
   Typography,
+  Popover,
 } from "@mui/material";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import { useEffect, useMemo, useState } from "react";
 import QuestCard from "../components/QuestCard";
+import QuestEditor from "../components/QuestEditor";
 import "../firebase/database";
 import { firestoreCreateEmptyQuest } from "../firebase/database";
 
@@ -41,6 +43,9 @@ export default function Quests(props) {
   // media query
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  // manage editor
+  const [questIdOnFocus, setQuestIdOnFocus] = useState(null);
 
   // rank quests by importance
   const getPriority = (quest) => {
@@ -70,7 +75,7 @@ export default function Quests(props) {
     <Container sx={{ padding: 2 }} maxWidth="xl">
       <Grid container spacing={2} alignItems="center">
         {priorityList.map(({ id, priority }) => (
-          <Grid item key={id} xs={12} sm={12} lg={12} xl={3}>
+          <Grid item key={id} xs={12} sm={4} lg={3}>
             {/* <Grid item key={id} xs={12} sm={6} lg={4} xl={3}> */}
             <QuestCard
               id={id}
@@ -83,13 +88,25 @@ export default function Quests(props) {
               }
               priority={priority}
               settings={props.settings}
+              setQuestIdOnFocus={setQuestIdOnFocus}
             ></QuestCard>
           </Grid>
         ))}
-        <Grid item xs={12} sm={12} lg={12} xl={3}>
+        <Grid item xs={12} sm={4} lg={3}>
           <NewQuestButton />
         </Grid>
       </Grid>
+      <QuestEditor
+        id={questIdOnFocus}
+        quest={props.activeQuests[questIdOnFocus]}
+        setQuest={(newQuest) =>
+          props.setActiveQuests({
+            ...props.activeQuests,
+            [questIdOnFocus]: newQuest,
+          })
+        }
+        setQuestIdOnFocus={setQuestIdOnFocus}
+      />
     </Container>
   );
 }

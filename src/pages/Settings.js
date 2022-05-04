@@ -108,7 +108,7 @@ export default function Settings(props) {
       <Stack spacing={1} padding={3} divider={<Divider />}>
         <UserSettings />
         <ThemeSettings themeSetting={props.settings.themeSetting} />
-        <AnimationSettings enableAnimation={props.settings.enableAnimation} />
+        {/* <AnimationSettings enableAnimation={props.settings.enableAnimation} /> */}
       </Stack>
     </Container>
   );

@@ -14,7 +14,7 @@ const questFieldNames = {
   description: "Description",
   note: "Note",
   title: "Title",
-  type: "Type",
+  type: "Quest Type",
 };
 
 export { questTypes, questTypeNames, questFieldNames };
