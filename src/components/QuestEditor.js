@@ -52,24 +52,6 @@ import {
 } from "../firebase/database";
 import { questColor } from "../colors";
 
-// function deepCopy(object) {
-//   return JSON.parse(JSON.stringify(object));
-// }
-
-function Entry(props) {
-  return (
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-      }}
-    >
-      {props.children}
-    </Box>
-  );
-}
-
 export default function QuestEditor(props) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -81,14 +63,6 @@ export default function QuestEditor(props) {
 
   // auto save
   const [lastEditTime, setLastEditTime] = useState(null);
-  // useEffect(() => {
-  //   if (props.quest) {
-  //     if (props.quest.dateModified.toMillis() > lastEditTime.toMillis()){
-  //     setLastEditTime(props.quest.dateModified);}
-  //   } else {
-  //     setLastEditTime(null);
-  //   }
-  // }, [props.quest, lastEditTime]);
   const setQuest = (newQuest) => {
     setLastEditTime(Timestamp.now());
     props.setQuest(newQuest);
@@ -152,7 +126,21 @@ export default function QuestEditor(props) {
           horizontal: "center",
         }}
         open={props.id !== null}
-        onClose={() => props.setQuestIdOnFocus(null)}
+        onClose={() => {
+          // on close, immediately save new edit
+          if (
+            lastEditTime &&
+            props.quest.dateModified.toMillis() < lastEditTime.toMillis()
+          ) {
+            firestoreSaveQuest(
+              { ...props.quest, dateModified: lastEditTime },
+              props.id,
+              () => console.log("saveQuest: success"),
+              () => console.log("saveQuest: failure")
+            );
+          }
+          props.setQuestIdOnFocus(null);
+        }}
       >
         <Box
           sx={{
@@ -224,8 +212,10 @@ export default function QuestEditor(props) {
               variant="filled"
               multiline
               maxRows={2}
-              InputProps={{ disableUnderline: true }}
-              // margin="dense"
+              InputProps={{
+                disableUnderline: true,
+                sx: { backgroundColor: "transparent" },
+              }}
               value={props.quest ? props.quest.title : ""}
               onChange={(e) =>
                 setQuest({ ...props.quest, title: e.target.value })
@@ -238,8 +228,10 @@ export default function QuestEditor(props) {
               variant="filled"
               multiline
               // maxRows={20}
-              InputProps={{ disableUnderline: true }}
-              // margin="none"
+              InputProps={{
+                disableUnderline: true,
+                sx: { backgroundColor: "transparent" },
+              }}
               value={props.quest ? props.quest.note : ""}
               onChange={(e) =>
                 setQuest({ ...props.quest, note: e.target.value })
@@ -252,7 +244,10 @@ export default function QuestEditor(props) {
                   label="Active Date"
                   value={props.quest ? props.quest.dateActive.toDate() : null}
                   onChange={(newValue) => {
-                    // setValue(newValue);
+                    setQuest({
+                      ...props.quest,
+                      dateActive: Timestamp.fromDate(newValue),
+                    });
                   }}
                   renderInput={(params) => <TextField {...params} />}
                 />
@@ -262,7 +257,10 @@ export default function QuestEditor(props) {
                   label="Active Time"
                   value={props.quest ? props.quest.dateActive.toDate() : null}
                   onChange={(newValue) => {
-                    // setValue(newValue);
+                    setQuest({
+                      ...props.quest,
+                      dateActive: Timestamp.fromDate(newValue),
+                    });
                   }}
                   renderInput={(params) => <TextField {...params} />}
                 />
@@ -278,7 +276,10 @@ export default function QuestEditor(props) {
                       : null
                   }
                   onChange={(newValue) => {
-                    // setValue(newValue);
+                    setQuest({
+                      ...props.quest,
+                      dateExpire: Timestamp.fromDate(newValue),
+                    });
                   }}
                   renderInput={(params) => <TextField {...params} />}
                 />
@@ -294,7 +295,10 @@ export default function QuestEditor(props) {
                       : null
                   }
                   onChange={(newValue) => {
-                    // setValue(newValue);
+                    setQuest({
+                      ...props.quest,
+                      dateExpire: Timestamp.fromDate(newValue),
+                    });
                   }}
                   renderInput={(params) => <TextField {...params} />}
                 />
@@ -308,7 +312,9 @@ export default function QuestEditor(props) {
                     labelId="quest-type-select-label"
                     value={props.quest ? props.quest.type : ""}
                     label={questFieldNames["type"]}
-                    onChange={() => {}}
+                    onChange={(event) => {
+                      setQuest({ ...props.quest, type: event.target.value });
+                    }}
                   >
                     <MenuItem value={"main"}>{questTypeNames["main"]}</MenuItem>
                     <MenuItem value={"side"}>{questTypeNames["side"]}</MenuItem>
@@ -325,9 +331,15 @@ export default function QuestEditor(props) {
               <Grid item xs={6} sm={3} md={2}>
                 <Typography variant="subtitle2">Priority</Typography>
                 <Rating
-                  // value={value}
+                  value={
+                    props.quest
+                      ? props.quest.priority
+                        ? props.quest.priority
+                        : null
+                      : null
+                  }
                   onChange={(event, newValue) => {
-                    // setValue(newValue);
+                    setQuest({ ...props.quest, priority: newValue });
                   }}
                 />
               </Grid>

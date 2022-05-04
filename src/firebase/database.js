@@ -40,6 +40,8 @@ export function firestoreCreateEmptyQuest(type) {
     dateAdded: currentTime,
     dateModified: currentTime,
     dateActive: currentTime,
+    dateExpire: null,
+    priority: null,
   });
 }
 
