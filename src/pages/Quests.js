@@ -20,7 +20,7 @@ import { firestoreCreateEmptyQuest } from "../firebase/database";
 function NewQuestButton() {
   return (
     <Card elevation={3}>
-      <CardActionArea onClick={() => firestoreCreateEmptyQuest(null)}>
+      <CardActionArea onClick={() => firestoreCreateEmptyQuest("none")}>
         <Box
           sx={{
             display: "flex",

@@ -35,6 +35,8 @@ export function firestoreCreateEmptyQuest(type) {
   const currentTime = Timestamp.now();
   addDoc(collection(db, "users", uid(), "active"), {
     type: type,
+    title: "",
+    note: "",
     dateAdded: currentTime,
     dateModified: currentTime,
     dateActive: currentTime,

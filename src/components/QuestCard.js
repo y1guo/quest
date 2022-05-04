@@ -23,7 +23,11 @@ import MuiAccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { questTypes, questTypeNames, questFieldNames } from "../appMeta";
-import { createEmptyQuest, firestoreSaveQuest } from "../firebase/database";
+import {
+  createEmptyQuest,
+  firestoreSaveQuest,
+  firestoreMoveQuestToTrash,
+} from "../firebase/database";
 import {
   Alert,
   Box,
@@ -64,9 +68,12 @@ import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import {
+  DateTimePicker,
+  MobileDateTimePicker,
+  DatePicker,
+} from "@mui/x-date-pickers";
 import { Timestamp } from "firebase/firestore";
-import { DateTimePicker, MobileDateTimePicker } from "@mui/x-date-pickers";
 
 function deepCopy(object) {
   return JSON.parse(JSON.stringify(object));
@@ -187,7 +194,12 @@ export default function QuestCard(props) {
   const handleClickMore = (event) => setAnchorEl(event.currentTarget);
   const [openConfirmDelete, setOpenConfirmDelete] = useState(false);
   const handleDelete = () => {
-    console.log("QuestCards: Delete: confirm delete");
+    firestoreMoveQuestToTrash(
+      props.quest,
+      props.id,
+      () => console.log("fireStoreMoveToTrash: success"),
+      () => console.log("fireStoreMoveToTrash: failure")
+    );
   };
   const lastEditSince = () => {
     const seconds =
@@ -301,7 +313,9 @@ export default function QuestCard(props) {
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <DateTimePicker
             label="Expire"
-            value={props.quest.dateExpire && props.quest.dateExpire.toDate()}
+            value={
+              props.quest.dateExpire ? props.quest.dateExpire.toDate() : null
+            }
             onChange={(newValue) => {
               // setValue(newValue);
             }}
@@ -317,7 +331,7 @@ export default function QuestCard(props) {
                 {questTypeNames["optional"]}
               </MenuItem>
               <MenuItem value={"daily"}>{questTypeNames["daily"]}</MenuItem>
-              <MenuItem value={null}>{"None"}</MenuItem>
+              <MenuItem value={"none"}>{"None"}</MenuItem>
             </Select>
           </FormControl>
         </Box>
