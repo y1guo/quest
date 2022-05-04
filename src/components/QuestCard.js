@@ -1,4 +1,11 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
 import { styled } from "@mui/material/styles";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
@@ -16,7 +23,7 @@ import MuiAccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { questTypes, questTypeNames, questFieldNames } from "../appMeta";
-import { createEmptyQuest, saveQuest } from "../firebase/database";
+import { createEmptyQuest, firestoreSaveQuest } from "../firebase/database";
 import {
   Alert,
   Box,
@@ -54,166 +61,9 @@ import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import { Timestamp } from "firebase/firestore";
 
-// Quest Editting Panel
-
-function copyQuest(quest) {
-  return { ...quest, prerequisite: [...quest.prerequisite] };
+function deepCopy(object) {
+  return JSON.parse(JSON.stringify(object));
 }
-
-function EditQuest(props) {
-  const handleChange = (type) => (event) => {
-    const newQuest = copyQuest(props.quest);
-    newQuest[type] = event.target.value;
-    props.setQuest(newQuest);
-  };
-
-  return (
-    <Stack spacing={2}>
-      <TextField
-        label="Title"
-        multiline
-        maxRows={4}
-        value={props.quest.title}
-        onChange={handleChange("title")}
-      />
-      <TextField
-        label="Note"
-        multiline
-        maxRows={20}
-        value={props.quest.note}
-        onChange={handleChange("note")}
-      />
-    </Stack>
-  );
-}
-
-// Quest Items Accordion
-
-const Accordion = styled((props) => (
-  <MuiAccordion disableGutters elevation={0} square {...props} />
-))(({ theme }) => ({
-  // border: `1px solid ${theme.palette.divider}`,
-  // "&:not(:last-child)": {
-  //   borderBottom: 0,
-  // },
-  // "&:before": {
-  //   display: "none",
-  // },
-}));
-
-const AccordionSummary = styled((props) => (
-  <MuiAccordionSummary
-    expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: "0.9rem" }} />}
-    {...props}
-  />
-))(({ theme }) => ({
-  backgroundColor:
-    theme.palette.mode === "dark"
-      ? "rgba(255, 255, 255, .0)"
-      : "rgba(0, 0, 0, .0)",
-  flexDirection: "row-reverse",
-  "& .MuiAccordionSummary-expandIconWrapper.Mui-expanded": {
-    transform: "rotate(90deg)",
-  },
-  "& .MuiAccordionSummary-content": {
-    marginLeft: theme.spacing(1),
-  },
-}));
-
-const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
-  padding: theme.spacing(1),
-  borderTop: "1px solid rgba(0, 0, 0, .0 )",
-}));
-
-function CustomizedAccordions(props) {
-  const [quest, setQuest] = useState(copyQuest(props.activeQuests[props.id]));
-  useEffect(() => {
-    setQuest(props.activeQuests[props.id]);
-  }, [props.activeQuests, props.id]);
-
-  const [expanded, setExpanded] = useState(quest.title ? false : true);
-  const toggleExpanded = (event) => {
-    if (expanded) {
-      saveQuest(
-        quest,
-        props.id,
-        () => setOpenSnackBarSuccess(true),
-        () => setOpenSnackBarError(true)
-      );
-    }
-    setExpanded(!expanded);
-  };
-  const [openSnackBarSuccess, setOpenSnackBarSuccess] = useState(false);
-  const handleCloseSnackBarSuccess = () => {
-    setOpenSnackBarSuccess(false);
-  };
-  const [openSnackBarError, setOpenSnackBarError] = useState(false);
-  const handleCloseSnackBarError = () => {
-    setOpenSnackBarError(false);
-  };
-
-  return (
-    <Box>
-      <Accordion
-        expanded={expanded}
-        onChange={toggleExpanded}
-        TransitionProps={{ unmountOnExit: true }}
-      >
-        <AccordionSummary>
-          <Typography>{quest.title ? quest.title : "New Quest"}</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <EditQuest
-            id={props.id}
-            activeQuests={props.activeQuests}
-            questIdByType={props.questIdByType}
-            quest={quest}
-            setQuest={setQuest}
-          />
-        </AccordionDetails>
-      </Accordion>
-      <Snackbar
-        open={openSnackBarSuccess}
-        autoHideDuration={4000}
-        onClose={handleCloseSnackBarSuccess}
-      >
-        <Alert
-          onClose={handleCloseSnackBarSuccess}
-          severity={"success"}
-          sx={{ width: "100%" }}
-        >
-          Quest Saved
-        </Alert>
-      </Snackbar>
-      <Snackbar
-        open={openSnackBarError}
-        autoHideDuration={4000}
-        onClose={handleCloseSnackBarError}
-      >
-        <Alert
-          onClose={handleCloseSnackBarError}
-          severity={"error"}
-          sx={{ width: "100%" }}
-        >
-          Couldn't Save Quest!
-        </Alert>
-      </Snackbar>
-    </Box>
-  );
-}
-
-// Quest Card
-
-const ExpandMore = styled((props) => {
-  const { expand, ...other } = props;
-  return <IconButton {...other} />;
-})(({ theme, expand }) => ({
-  transform: !expand ? "rotate(-90deg)" : "rotate(0deg)",
-  marginLeft: "auto",
-  transition: theme.transitions.create("transform", {
-    duration: theme.transitions.duration.shortest,
-  }),
-}));
 
 export default function QuestCard(props) {
   // media query
@@ -238,10 +88,91 @@ export default function QuestCard(props) {
       ? theme.palette.mode === "light"
         ? blue[200]
         : "#093170"
-      : null;
+      : theme.palette.mode === "light"
+      ? blueGrey[50]
+      : blueGrey[700];
 
   // card expanded or not
   const [expanded, setExpanded] = useState(false);
+
+  // saved versions
+  // const mergeGlobalToLocal = (local, global) => {
+  //   const current = local[local.length-1]
+  //   if (current) {
+  //     console.log("mergeGlobalToLocal: global == current?", JSON.stringify(global) === JSON.stringify(current))
+  //   } else {
+  //     console.log("mergeGlobalToLocal: current version not found, set current to global")
+  //   }
+  // }
+
+  // const reducer = (state, action) => {
+  //   // update local versions
+  //   switch (action.type) {
+  //     case "localUpdate":
+  //       console.log("localUpdate: state:", state);
+  //       return state;
+  //     case "globalUpdate":
+  //       console.log("globalUpdate: state:", state);
+  //       return state;
+  //     default:
+  //       throw new Error();
+  //   }
+  // };
+  // const [localVersions, dispatchLocalVersions] = useReducer(
+  //   reducer,
+  //   localStorage.getItem("localVersions") || []
+  // );
+  // useEffect(() => {
+  //   dispatchLocalVersions({ type: "globalUpdate" });
+  // }, [props.quest]);
+
+  // const [localVersions, setLocalVersions] = useState(localStorage.getItem("localVersions") || []);
+  // const currentVersion = useMemo(()=>localVersions[localVersions.length - 1],[localVersions])
+  // const mergeGlobalToLocal = useCallback((globalVersion)=>{console.log("currentVersion:", currentVersion);if (currentVersion) {
+  //   if (JSON.stringify(currentVersion) !== JSON.stringify(globalVersion)) {
+  //     setLocalVersions([...localVersions, deepCopy(globalVersion)]);
+  //   }
+  // } else {
+  //   setLocalVersions([deepCopy(globalVersion)])
+  // }},[currentVersion, localVersions])
+  // useEffect(()=>{
+  //   mergeGlobalToLocal(props.quest)
+  // },[props.quest])
+  // auto save
+  // useEffect(() => {
+  //   // if (initialRender.current) {
+  //   //   initialRender.current = false;
+  //   // } else {
+  //   if (props.id === "xIvtNn43d4lsjc7qLipZ") {
+  //     const timer = setTimeout(() => {
+  //       console.log(
+  //         "QuestCard: saved versions:",
+  //         localVersions.map((q) => q.title)
+  //       );
+  //     }, 1000);
+  //     return () => clearTimeout(timer);
+  //   }
+
+  //   // }
+  // }, [props.quest]);
+  const [lastEditTime, setLastEditTime] = useState(props.quest.dateModified);
+  const setQuest = (newQuest) => {
+    setLastEditTime(Timestamp.now());
+    props.setQuest(newQuest);
+  };
+  useEffect(() => {
+    if (props.quest.dateModified.toMillis() < lastEditTime.toMillis()) {
+      const timer = setTimeout(() => {
+        firestoreSaveQuest(
+          { ...props.quest, dateModified: lastEditTime },
+          props.id,
+          () => console.log("saveQuest: success"),
+          () => console.log("saveQuest: failure")
+        );
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [lastEditTime, props.id, props.quest]);
 
   // menu
   const [anchorEl, setAnchorEl] = useState(null);
@@ -251,7 +182,7 @@ export default function QuestCard(props) {
   const handleDelete = () => {
     console.log("QuestCards: Delete: confirm delete");
   };
-  const lastEdit = () => {
+  const lastEditSince = () => {
     const seconds =
       (Timestamp.now().toMillis() - props.quest.dateModified.toMillis()) / 1000;
     return seconds < 120
@@ -267,7 +198,7 @@ export default function QuestCard(props) {
     <Card elevation={3} sx={{ backgroundColor: color }}>
       <CardActionArea onClick={() => setExpanded(!expanded)}>
         <Typography variant="h6" padding={2}>
-          {props.quest.title}
+          {props.quest.title || "New Quest"}
         </Typography>
       </CardActionArea>
       <Collapse
@@ -278,7 +209,7 @@ export default function QuestCard(props) {
         <Box sx={{ display: "flex", alignItems: "center", pl: 2 }}>
           <EditOutlinedIcon fontSize="small" />
           <Typography variant="body2" pl={0.5} color="text.secondary">
-            {lastEdit() + " "}
+            {lastEditSince() + " "}
             ago
           </Typography>
           <IconButton sx={{ ml: "auto" }} onClick={handleClickMore}>
@@ -333,6 +264,9 @@ export default function QuestCard(props) {
             InputProps={{ disableUnderline: true }}
             margin="dense"
             value={props.quest.title}
+            onChange={(e) =>
+              setQuest({ ...props.quest, title: e.target.value })
+            }
           />
           <TextField
             fullWidth
@@ -343,6 +277,7 @@ export default function QuestCard(props) {
             InputProps={{ disableUnderline: true }}
             margin="dense"
             value={props.quest.note}
+            onChange={(e) => setQuest({ ...props.quest, note: e.target.value })}
           />
         </CardContent>
       </Collapse>

@@ -94,7 +94,11 @@ function App() {
               {page === "Dashboard" ? (
                 <Dashboard />
               ) : page === "Quests" ? (
-                <Quests activeQuests={activeQuests} settings={settings} />
+                <Quests
+                  activeQuests={activeQuests}
+                  setActiveQuests={setActiveQuests}
+                  settings={settings}
+                />
               ) : page === "Calendar" ? (
                 <Calendar />
               ) : page === "Settings" ? (
