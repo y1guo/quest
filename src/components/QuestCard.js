@@ -34,12 +34,15 @@ import {
   DialogTitle,
   Divider,
   Fade,
+  FormControl,
   Grow,
+  InputLabel,
   ListItemIcon,
   ListItemText,
   Menu,
   MenuItem,
   Paper,
+  Select,
   Slide,
   Snackbar,
   Stack,
@@ -59,7 +62,11 @@ import {
 } from "@mui/material/colors";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { Timestamp } from "firebase/firestore";
+import { DateTimePicker, MobileDateTimePicker } from "@mui/x-date-pickers";
 
 function deepCopy(object) {
   return JSON.parse(JSON.stringify(object));
@@ -280,6 +287,40 @@ export default function QuestCard(props) {
             onChange={(e) => setQuest({ ...props.quest, note: e.target.value })}
           />
         </CardContent>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <DateTimePicker
+            label="Active"
+            value={props.quest.dateActive.toDate()}
+            onChange={(newValue) => {
+              // setValue(newValue);
+            }}
+            renderInput={(params) => <TextField {...params} />}
+          />
+        </LocalizationProvider>
+
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <DateTimePicker
+            label="Expire"
+            value={props.quest.dateExpire && props.quest.dateExpire.toDate()}
+            onChange={(newValue) => {
+              // setValue(newValue);
+            }}
+            renderInput={(params) => <TextField {...params} />}
+          />
+        </LocalizationProvider>
+        <Box sx={{ minWidth: 120 }}>
+          <FormControl fullWidth>
+            <Select value={props.quest.type} label="Type" onChange={() => {}}>
+              <MenuItem value={"main"}>{questTypeNames["main"]}</MenuItem>
+              <MenuItem value={"side"}>{questTypeNames["side"]}</MenuItem>
+              <MenuItem value={"optional"}>
+                {questTypeNames["optional"]}
+              </MenuItem>
+              <MenuItem value={"daily"}>{questTypeNames["daily"]}</MenuItem>
+              <MenuItem value={null}>{"None"}</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
       </Collapse>
     </Card>
   );
