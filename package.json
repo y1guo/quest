@@ -19,6 +19,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
+    "serve": "npm run build; serve -s build -l 3001",
+    "deploy": "npm run build; firebase deploy",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

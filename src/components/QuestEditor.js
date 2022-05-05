@@ -146,7 +146,8 @@ export default function QuestEditor(props) {
           sx={{
             display: "flex",
             flexDirection: "column",
-            maxHeight: "calc(100vh - 2rem)",
+            maxHeight:
+              "calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom))",
           }}
         >
           <Box

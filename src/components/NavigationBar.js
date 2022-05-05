@@ -17,9 +17,11 @@ export default function NavigationBar(props) {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
-    <Paper elevation={3}>
+    <Paper sx={{ backgroundImage: "none" }} elevation={3}>
       <BottomNavigation
-        sx={{ backgroundColor: "transparent" }}
+        // sx={{
+        //   backgroundColor: "transparent",
+        // }}
         showLabels
         value={props.page}
         onChange={(event, newPage) => {
@@ -49,7 +51,9 @@ export default function NavigationBar(props) {
           icon={<SettingsIcon />}
         />
       </BottomNavigation>
-      {isMobile && <Box sx={{ height: "20px" }}></Box>}
+      {isMobile && (
+        <Box sx={{ height: `calc(0.5 * env(safe-area-inset-bottom))` }}></Box>
+      )}
     </Paper>
   );
 }

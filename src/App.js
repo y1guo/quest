@@ -12,13 +12,6 @@ import Settings from "./pages/Settings";
 import NavigationBar from "./components/NavigationBar";
 import { listenToUserData } from "./firebase/database";
 
-// const [theme, setTheme] = useState(createTheme());
-// const theme = createTheme({
-//   palette: {
-//     mode: "dark",
-//   },
-// });
-
 function App() {
   // set user
   const [user, setUser] = useState(getAuth().currentUser || { uid: "loading" });
@@ -32,22 +25,28 @@ function App() {
   const [themeSetting, setThemeSetting] = useState(
     JSON.parse(localStorage.getItem("theme")) || "auto"
   );
-  const theme = React.useMemo(
-    () =>
-      createTheme({
-        palette: {
-          mode:
-            themeSetting === "dark"
-              ? "dark"
-              : themeSetting === "light"
-              ? "light"
-              : systemDarkMode
-              ? "dark"
-              : "light",
-        },
-      }),
-    [themeSetting, systemDarkMode]
-  );
+  const theme = React.useMemo(() => {
+    const theme = createTheme({
+      palette: {
+        mode:
+          themeSetting === "dark"
+            ? "dark"
+            : themeSetting === "light"
+            ? "light"
+            : systemDarkMode
+            ? "dark"
+            : "light",
+      },
+    });
+    // change Web / MacOS PWA status bar color
+    const setThemeColor = (color) =>
+      document
+        .querySelector('meta[name="theme-color"]')
+        .setAttribute("content", color);
+    setThemeColor(theme.palette.background.default);
+
+    return theme;
+  }, [themeSetting, systemDarkMode]);
 
   // enable animation or not
   // collapse not working on safari/ios
@@ -61,11 +60,11 @@ function App() {
     enableAnimation: { value: enableAnimation, setter: setEnableAnimation },
   };
 
-  // page to display
-  const [page, setPage] = useState("Quests");
-
   // media query
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  // page to display
+  const [page, setPage] = useState("Quests");
 
   // get all active quests
   const [activeQuests, setActiveQuests] = useState({});
@@ -79,12 +78,22 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
+      <Box
+        id="status-bar"
+        sx={{
+          height: `env(safe-area-inset-top)`,
+          backgroundColor:
+            theme.palette.mode === "dark"
+              ? theme.palette.background.default
+              : "#000",
+        }}
+      />
       {user ? (
         user.uid === "loading" ? null : (
           <Box
             sx={{
               width: "100%",
-              height: "100%",
+              height: `calc(100% - env(safe-area-inset-top))`,
               display: "flex",
               alignItems: "center",
               flexDirection: isMobile ? "column" : "column-reverse",

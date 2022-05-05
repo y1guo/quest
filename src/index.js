@@ -12,3 +12,10 @@ root.render(
 );
 
 serviceWorkerRegistration.register();
+
+// cancel the window scroll bounce effect animation
+// https://stackoverflow.com/questions/59193062
+window.addEventListener("scroll", (e) => {
+  e.preventDefault();
+  window.scrollTo(0, 0);
+});
