@@ -19,7 +19,7 @@ export const questColor = (quest, theme) =>
     : quest.type === "side"
     ? theme.palette.mode === "light"
       ? amber[200]
-      : yellow[900]
+      : orange[900]
     : quest.type === "optional"
     ? theme.palette.mode === "light"
       ? cyan[200]
