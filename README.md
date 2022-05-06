@@ -1,2 +1,2 @@
 # system
-Personal Assistant
+A Personal Assistant Progressive Web App
