@@ -69,7 +69,7 @@ function App() {
   const [activeQuests, setActiveQuests] = useState({});
   useEffect(() => {
     if (user && user.uid !== "loading") {
-      const unsubscribe = listenToUserData("active", setActiveQuests);
+      const unsubscribe = listenToUserData(setActiveQuests, "active");
       return unsubscribe;
     }
   }, [user]);

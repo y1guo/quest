@@ -22,6 +22,7 @@ const questFieldNamesZH = {
   note: "记录",
   title: "标题",
   type: "任务种类",
+  logs: "日志",
 };
 const questFieldNamesEN = {
   dateActive: "Active",
@@ -32,6 +33,7 @@ const questFieldNamesEN = {
   note: "Note",
   title: "Title",
   type: "Quest Type",
+  logs: "Logs",
 };
 
 export {

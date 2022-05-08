@@ -10,15 +10,14 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
-import { useState } from "react";
 
 const db = getFirestore();
 
 const uid = () => getAuth().currentUser.uid;
 
-export function listenToUserData(path, setData) {
+export function listenToUserData(setData, ...pathSegments) {
   const unsubscribe = onSnapshot(
-    query(collection(db, "users", uid(), path)),
+    query(collection(db, "users", uid(), ...pathSegments)),
     (querySnapshot) => {
       const allDocs = {};
       querySnapshot.forEach((doc) => {
@@ -27,7 +26,6 @@ export function listenToUserData(path, setData) {
       setData(allDocs);
     }
   );
-
   return unsubscribe;
 }
 
@@ -42,6 +40,7 @@ export function firestoreCreateEmptyQuest(type) {
     dateActive: currentTime,
     dateExpire: null,
     priority: null,
+    prerequisite: [],
   });
 }
 
@@ -54,4 +53,14 @@ export function firestoreMoveQuestToTrash(quest, id, onSuccess, onFail) {
     deleteDoc(doc(db, "users", uid(), "active", id)).then(onSuccess, onFail),
     onFail
   );
+}
+
+export function firestoreCreateEmptyLog(id) {
+  const currentTime = Timestamp.now();
+  addDoc(collection(db, "users", uid(), "active", id, "logs"), {
+    date: currentTime,
+    note: "",
+    dateAdded: currentTime,
+    dateModified: currentTime,
+  });
 }

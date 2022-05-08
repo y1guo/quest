@@ -95,18 +95,21 @@ export default function Quests(props) {
           <NewQuestButton />
         </Grid>
       </Grid>
-      <QuestEditor
-        id={questIdOnFocus}
-        quest={props.activeQuests[questIdOnFocus]}
-        setQuest={(newQuest) =>
-          props.setActiveQuests({
-            ...props.activeQuests,
-            [questIdOnFocus]: newQuest,
-          })
-        }
-        setQuestIdOnFocus={setQuestIdOnFocus}
-        settings={props.settings}
-      />
+      {questIdOnFocus && (
+        <QuestEditor
+          id={questIdOnFocus}
+          quest={props.activeQuests[questIdOnFocus]}
+          setQuest={(newQuest) =>
+            props.setActiveQuests({
+              ...props.activeQuests,
+              [questIdOnFocus]: newQuest,
+            })
+          }
+          setQuestIdOnFocus={setQuestIdOnFocus}
+          settings={props.settings}
+          activeQuests={props.activeQuests}
+        />
+      )}
     </Container>
   );
 }
