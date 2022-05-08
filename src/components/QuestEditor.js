@@ -142,211 +142,207 @@ export default function QuestEditor(props) {
           props.setQuestIdOnFocus(null);
         }}
       >
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            maxHeight:
-              "calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom))",
-          }}
-        >
+        {props.quest && (
           <Box
             sx={{
               display: "flex",
-              alignItems: "center",
-              p: 1,
-              pl: 2,
+              flexDirection: "column",
+              maxHeight:
+                "calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom))",
             }}
           >
-            <EditOutlinedIcon fontSize="small" />
-            <Typography variant="body2" pl={0.5} color="text.secondary">
-              {lastEditSince() + " "}
-              ago
-            </Typography>
-            <IconButton sx={{ ml: "auto" }} onClick={handleClickMore}>
-              <MoreVertIcon />
-            </IconButton>
-            <Menu
-              anchorEl={anchorEl}
-              open={openMenu}
-              onClose={() => setAnchorEl(null)}
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                p: 1,
+                pl: 2,
+              }}
             >
-              <MenuItem
-                onClick={() => {
-                  setOpenConfirmDelete(true);
-                  setAnchorEl(null);
-                }}
+              <EditOutlinedIcon fontSize="small" />
+              <Typography variant="body2" pl={0.5} color="text.secondary">
+                {lastEditSince() + " "}
+                ago
+              </Typography>
+              <IconButton sx={{ ml: "auto" }} onClick={handleClickMore}>
+                <MoreVertIcon />
+              </IconButton>
+              <Menu
+                anchorEl={anchorEl}
+                open={openMenu}
+                onClose={() => setAnchorEl(null)}
               >
-                <ListItemIcon>
-                  <DeleteOutlinedIcon fontSize="small" />
-                </ListItemIcon>
-                <ListItemText>Delete</ListItemText>
-              </MenuItem>
-            </Menu>
-            <Dialog open={openConfirmDelete}>
-              <DialogTitle>{"Do you really want to delete?"}</DialogTitle>
-              <DialogActions>
-                <Button
+                <MenuItem
                   onClick={() => {
-                    setOpenConfirmDelete(false);
-                    handleDelete();
+                    setOpenConfirmDelete(true);
+                    setAnchorEl(null);
                   }}
                 >
-                  Yes
-                </Button>
-                <Button
-                  onClick={() => {
-                    setOpenConfirmDelete(false);
-                  }}
-                  autoFocus
-                >
-                  No
-                </Button>
-              </DialogActions>
-            </Dialog>
-          </Box>
-          <Box sx={{ overflow: "auto" }}>
-            <TextField
-              sx={{ m: 0 }}
-              fullWidth
-              label={questFieldNames["title"]}
-              variant="filled"
-              multiline
-              maxRows={2}
-              InputProps={{
-                disableUnderline: true,
-                sx: { backgroundColor: "transparent" },
-              }}
-              value={props.quest ? props.quest.title : ""}
-              onChange={(e) =>
-                setQuest({ ...props.quest, title: e.target.value })
-              }
-            />
-            <TextField
-              sx={{ m: 0 }}
-              fullWidth
-              label={questFieldNames["note"]}
-              variant="filled"
-              multiline
-              // maxRows={20}
-              InputProps={{
-                disableUnderline: true,
-                sx: { backgroundColor: "transparent" },
-              }}
-              value={props.quest ? props.quest.note : ""}
-              onChange={(e) =>
-                setQuest({ ...props.quest, note: e.target.value })
-              }
-            />
-            <Grid container py={2} px={2} spacing={2} alignItems="center">
-              <Grid item xs={6} sm={3} md={2}>
-                {/* <Typography variant="button">Active</Typography> */}
-                <DatePicker
-                  label="Active Date"
-                  value={props.quest ? props.quest.dateActive.toDate() : null}
-                  onChange={(newValue) => {
-                    setQuest({
-                      ...props.quest,
-                      dateActive: Timestamp.fromDate(newValue),
-                    });
-                  }}
-                  renderInput={(params) => <TextField {...params} />}
-                />
-              </Grid>
-              <Grid item xs={6} sm={3} md={2}>
-                <TimePicker
-                  label="Active Time"
-                  value={props.quest ? props.quest.dateActive.toDate() : null}
-                  onChange={(newValue) => {
-                    setQuest({
-                      ...props.quest,
-                      dateActive: Timestamp.fromDate(newValue),
-                    });
-                  }}
-                  renderInput={(params) => <TextField {...params} />}
-                />
-              </Grid>
-              <Grid item xs={6} sm={3} md={2}>
-                <DatePicker
-                  label="Expire Date"
-                  value={
-                    props.quest
-                      ? props.quest.dateExpire
-                        ? props.quest.dateExpire.toDate()
-                        : null
-                      : null
-                  }
-                  onChange={(newValue) => {
-                    setQuest({
-                      ...props.quest,
-                      dateExpire: Timestamp.fromDate(newValue),
-                    });
-                  }}
-                  renderInput={(params) => <TextField {...params} />}
-                />
-              </Grid>
-              <Grid item xs={6} sm={3} md={2}>
-                <TimePicker
-                  label="Expire Time"
-                  value={
-                    props.quest
-                      ? props.quest.dateExpire
-                        ? props.quest.dateExpire.toDate()
-                        : null
-                      : null
-                  }
-                  onChange={(newValue) => {
-                    setQuest({
-                      ...props.quest,
-                      dateExpire: Timestamp.fromDate(newValue),
-                    });
-                  }}
-                  renderInput={(params) => <TextField {...params} />}
-                />
-              </Grid>
-              <Grid item xs={6} sm={3} md={2}>
-                <FormControl fullWidth>
-                  <InputLabel id="quest-type-select-label">
-                    {questFieldNames["type"]}
-                  </InputLabel>
-                  <Select
-                    labelId="quest-type-select-label"
-                    value={props.quest ? props.quest.type : ""}
-                    label={questFieldNames["type"]}
-                    onChange={(event) => {
-                      setQuest({ ...props.quest, type: event.target.value });
+                  <ListItemIcon>
+                    <DeleteOutlinedIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>Delete</ListItemText>
+                </MenuItem>
+              </Menu>
+              <Dialog open={openConfirmDelete}>
+                <DialogTitle>{"Do you really want to delete?"}</DialogTitle>
+                <DialogActions>
+                  <Button
+                    onClick={() => {
+                      setOpenConfirmDelete(false);
+                      handleDelete();
                     }}
                   >
-                    <MenuItem value={"main"}>{questTypeNames["main"]}</MenuItem>
-                    <MenuItem value={"side"}>{questTypeNames["side"]}</MenuItem>
-                    <MenuItem value={"optional"}>
-                      {questTypeNames["optional"]}
-                    </MenuItem>
-                    <MenuItem value={"daily"}>
-                      {questTypeNames["daily"]}
-                    </MenuItem>
-                    <MenuItem value={"none"}>{"None"}</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={6} sm={3} md={2}>
-                <Typography variant="subtitle2">Priority</Typography>
-                <Rating
-                  value={
-                    props.quest
-                      ? props.quest.priority
-                        ? props.quest.priority
+                    Yes
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      setOpenConfirmDelete(false);
+                    }}
+                    autoFocus
+                  >
+                    No
+                  </Button>
+                </DialogActions>
+              </Dialog>
+            </Box>
+            <Box sx={{ overflow: "auto" }}>
+              <TextField
+                sx={{ m: 0 }}
+                fullWidth
+                label={questFieldNames["title"]}
+                variant="filled"
+                multiline
+                InputProps={{
+                  disableUnderline: true,
+                  sx: { backgroundColor: "transparent" },
+                }}
+                value={props.quest.title}
+                onInput={(e) =>
+                  setQuest({ ...props.quest, title: e.target.value })
+                }
+              />
+
+              <TextField
+                sx={{ m: 0 }}
+                fullWidth
+                label={questFieldNames["note"]}
+                variant="filled"
+                multiline
+                InputProps={{
+                  disableUnderline: true,
+                  sx: { backgroundColor: "transparent" },
+                }}
+                value={props.quest.note}
+                onInput={(e) =>
+                  setQuest({ ...props.quest, note: e.target.value })
+                }
+              />
+
+              <Grid container py={2} px={2} spacing={2} alignItems="center">
+                <Grid item xs={6} sm={3} md={2}>
+                  {/* <Typography variant="button">Active</Typography> */}
+                  <DatePicker
+                    label="Active Date"
+                    value={props.quest.dateActive.toDate()}
+                    onChange={(newValue) => {
+                      setQuest({
+                        ...props.quest,
+                        dateActive: Timestamp.fromDate(newValue),
+                      });
+                    }}
+                    renderInput={(params) => <TextField {...params} />}
+                  />
+                </Grid>
+                <Grid item xs={6} sm={3} md={2}>
+                  <TimePicker
+                    label="Active Time"
+                    value={props.quest.dateActive.toDate()}
+                    onChange={(newValue) => {
+                      setQuest({
+                        ...props.quest,
+                        dateActive: Timestamp.fromDate(newValue),
+                      });
+                    }}
+                    renderInput={(params) => <TextField {...params} />}
+                  />
+                </Grid>
+                <Grid item xs={6} sm={3} md={2}>
+                  <DatePicker
+                    label="Expire Date"
+                    value={
+                      props.quest.dateExpire
+                        ? props.quest.dateExpire.toDate()
                         : null
-                      : null
-                  }
-                  onChange={(event, newValue) => {
-                    setQuest({ ...props.quest, priority: newValue });
-                  }}
-                />
+                    }
+                    onChange={(newValue) => {
+                      setQuest({
+                        ...props.quest,
+                        dateExpire: Timestamp.fromDate(newValue),
+                      });
+                    }}
+                    renderInput={(params) => <TextField {...params} />}
+                  />
+                </Grid>
+                <Grid item xs={6} sm={3} md={2}>
+                  <TimePicker
+                    label="Expire Time"
+                    value={
+                      props.quest.dateExpire
+                        ? props.quest.dateExpire.toDate()
+                        : null
+                    }
+                    onChange={(newValue) => {
+                      setQuest({
+                        ...props.quest,
+                        dateExpire: Timestamp.fromDate(newValue),
+                      });
+                    }}
+                    renderInput={(params) => <TextField {...params} />}
+                  />
+                </Grid>
+                <Grid item xs={6} sm={3} md={2}>
+                  <FormControl fullWidth>
+                    <InputLabel id="quest-type-select-label">
+                      {questFieldNames["type"]}
+                    </InputLabel>
+                    <Select
+                      labelId="quest-type-select-label"
+                      value={props.quest.type}
+                      label={questFieldNames["type"]}
+                      onChange={(event) => {
+                        setQuest({ ...props.quest, type: event.target.value });
+                      }}
+                    >
+                      <MenuItem value={"main"}>
+                        {questTypeNames["main"]}
+                      </MenuItem>
+                      <MenuItem value={"side"}>
+                        {questTypeNames["side"]}
+                      </MenuItem>
+                      <MenuItem value={"optional"}>
+                        {questTypeNames["optional"]}
+                      </MenuItem>
+                      <MenuItem value={"daily"}>
+                        {questTypeNames["daily"]}
+                      </MenuItem>
+                      <MenuItem value={"none"}>{"None"}</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={6} sm={3} md={2}>
+                  <Typography variant="subtitle2">Priority</Typography>
+                  <Rating
+                    value={props.quest.priority ? props.quest.priority : null}
+                    onChange={(event, newValue) => {
+                      setQuest({ ...props.quest, priority: newValue });
+                    }}
+                  />
+                </Grid>
               </Grid>
-            </Grid>
+            </Box>
           </Box>
-        </Box>
+        )}
       </Popover>
     </LocalizationProvider>
   );

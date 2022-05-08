@@ -51,9 +51,7 @@ export default function NavigationBar(props) {
           icon={<SettingsIcon />}
         />
       </BottomNavigation>
-      {isMobile && (
-        <Box sx={{ height: `calc(0.5 * env(safe-area-inset-bottom))` }}></Box>
-      )}
+      {isMobile && <Box sx={{ height: `env(safe-area-inset-bottom)` }}></Box>}
     </Paper>
   );
 }
