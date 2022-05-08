@@ -44,9 +44,14 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateTimePicker, DatePicker, TimePicker } from "@mui/x-date-pickers";
-import { questTypes, questTypeNames, questFieldNames } from "../appMeta";
 import {
-  createEmptyQuest,
+  questTypes,
+  questTypeNamesEN,
+  questTypeNamesZH,
+  questFieldNamesEN,
+  questFieldNamesZH,
+} from "../appMeta";
+import {
   firestoreSaveQuest,
   firestoreMoveQuestToTrash,
 } from "../firebase/database";
@@ -59,6 +64,14 @@ export default function QuestEditor(props) {
   const color = useMemo(
     () => (props.quest ? questColor(props.quest, theme) : null),
     [props.quest, theme]
+  );
+  // language
+  const [questTypeNames, questFieldNames] = useMemo(
+    () =>
+      props.settings.language.value === "en"
+        ? [questTypeNamesEN, questFieldNamesEN]
+        : [questTypeNamesZH, questFieldNamesZH],
+    [props.settings.language.value]
   );
 
   // auto save
@@ -326,7 +339,9 @@ export default function QuestEditor(props) {
                       <MenuItem value={"daily"}>
                         {questTypeNames["daily"]}
                       </MenuItem>
-                      <MenuItem value={"none"}>{"None"}</MenuItem>
+                      <MenuItem value={"none"}>
+                        {questTypeNames["none"]}
+                      </MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>

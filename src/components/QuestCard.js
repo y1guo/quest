@@ -13,7 +13,6 @@ export default function QuestCard(props) {
           {props.quest.title || "New Quest"}
         </Typography>
       </CardActionArea>
-      {/* {props.quest.} */}
     </Card>
   );
 }

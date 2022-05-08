@@ -87,7 +87,6 @@ export default function Quests(props) {
                 })
               }
               priority={priority}
-              settings={props.settings}
               setQuestIdOnFocus={setQuestIdOnFocus}
             ></QuestCard>
           </Grid>
@@ -106,6 +105,7 @@ export default function Quests(props) {
           })
         }
         setQuestIdOnFocus={setQuestIdOnFocus}
+        settings={props.settings}
       />
     </Container>
   );

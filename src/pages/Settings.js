@@ -22,6 +22,7 @@ function Entry(props) {
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
+        paddingX: 2,
       }}
     >
       {props.children}
@@ -83,32 +84,47 @@ function ThemeSettings(props) {
   );
 }
 
-function AnimationSettings(props) {
+function LanguageSettings(props) {
   return (
     <Entry>
-      <Typography variant="h6">Enable Animation</Typography>
-
-      <Switch
-        checked={props.enableAnimation.value}
-        onChange={(event) => {
-          props.enableAnimation.setter(event.target.checked);
-          localStorage.setItem(
-            "enableAnimation",
-            JSON.stringify(event.target.checked)
-          );
-        }}
-      />
+      <Typography variant="h6">Language</Typography>
+      <FormControl>
+        <RadioGroup
+          row
+          onChange={(event) => {
+            props.language.setter(event.target.value);
+            localStorage.setItem(
+              "language",
+              JSON.stringify(event.target.value)
+            );
+          }}
+          value={props.language.value}
+        >
+          <FormControlLabel
+            value="en"
+            control={<Radio />}
+            label="English"
+            labelPlacement="top"
+          />
+          <FormControlLabel
+            value="zh"
+            control={<Radio />}
+            label="中文"
+            labelPlacement="top"
+          />
+        </RadioGroup>
+      </FormControl>
     </Entry>
   );
 }
 
 export default function Settings(props) {
   return (
-    <Container sx={{ padding: 0 }}>
-      <Stack spacing={1} padding={3} divider={<Divider />}>
+    <Container sx={{ px: 0, py: 2 }} maxWidth="md">
+      <Stack spacing={1} padding={0} divider={<Divider />}>
         <UserSettings />
         <ThemeSettings themeSetting={props.settings.themeSetting} />
-        {/* <AnimationSettings enableAnimation={props.settings.enableAnimation} /> */}
+        <LanguageSettings language={props.settings.language} />
       </Stack>
     </Container>
   );

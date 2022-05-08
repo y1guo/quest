@@ -48,16 +48,15 @@ function App() {
     return theme;
   }, [themeSetting, systemDarkMode]);
 
-  // enable animation or not
-  // collapse not working on safari/ios
-  const [enableAnimation, setEnableAnimation] = useState(
-    JSON.parse(localStorage.getItem("enableAnimation")) || true
+  // language setting
+  const [language, setLanguage] = useState(
+    JSON.parse(localStorage.getItem("language")) || "en"
   );
 
   // wrap up all settings
   const settings = {
     themeSetting: { value: themeSetting, setter: setThemeSetting },
-    enableAnimation: { value: enableAnimation, setter: setEnableAnimation },
+    language: { value: language, setter: setLanguage },
   };
 
   // media query
@@ -99,7 +98,7 @@ function App() {
               flexDirection: isMobile ? "column" : "column-reverse",
             }}
           >
-            <Box sx={{ overflow: "auto", flexGrow: 1 }}>
+            <Box sx={{ width: "100%", overflow: "auto", flexGrow: 1 }}>
               {page === "Dashboard" ? (
                 <Dashboard />
               ) : page === "Quests" ? (
