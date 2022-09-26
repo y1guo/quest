@@ -5,25 +5,21 @@ A Personal Assistant Progressive Web App
 ## Database Structure
 
 ```
-/usrs/$uid/$folder/$documentId
-```
+/usrs/$uid/$folder/$documentId/$fields
 
-### Folders
+[folder]
+    active
+    archive
+    trash
 
--   active
--   archive
--   trash
-
-### Document Fields
-
-```
-type: str[quest type]
-title: str[quest title]
-note: str[note]
-dateAdded: timestamp
-dateModified: timestamp
-dateActive: timestamp
-dateExpire: timestamp
-priority: int[1-5]
-prerequisite: list[documentId]
+[fields]
+    type: str[quest type]
+    title: str[quest title]
+    note: str
+    dateAdded: timestamp
+    dateModified: timestamp
+    dateActive: timestamp
+    dateExpire: timestamp
+    priority: int[1 - 5]
+    prerequisite: list[$documentId]
 ```
